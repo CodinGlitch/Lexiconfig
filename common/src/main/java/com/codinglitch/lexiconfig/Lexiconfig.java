@@ -1,17 +1,15 @@
 package com.codinglitch.lexiconfig;
 
 import com.codinglitch.lexiconfig.classes.LexiconData;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.codinglitch.lexiconfig.platform.Services;
+import com.codinglitch.lexiconfig.LexiconfigApi;
 
+import java.nio.file.Path;
 import java.util.*;
 
-public class Lexiconfig {
+public class Lexiconfig extends LexiconfigApi {
+    public static final LexiconfigApi API = new Lexiconfig();
     public static final String ID = "lexiconfig";
-
-    public enum Event {
-        RELOAD
-    }
 
     private static final List<LexiconData> REGISTERED_LEXICONS = new ArrayList<>();
     private static final Map<Event, Runnable> LISTENERS = new HashMap<>();
@@ -24,34 +22,26 @@ public class Lexiconfig {
         return loadedService;
     }
 
-    // -- Logging -- \\
-    private static Logger LOGGER = LogManager.getLogger(ID);
-    public static void info(Object object, Object... substitutions) {
-        LOGGER.info(String.valueOf(object), substitutions);
-    }
-    public static void debug(Object object, Object... substitutions) {
-        LOGGER.debug(String.valueOf(object), substitutions);
-    }
-    public static void warn(Object object, Object... substitutions) {
-            LOGGER.warn(String.valueOf(object), substitutions);
-    }
-    public static void error(Object object, Object... substitutions) {
-        LOGGER.error(String.valueOf(object), substitutions);
-    }
-
-
-    public static void register(LexiconData lexicon) {
+    @Override
+    public void register(LexiconData lexicon) {
         REGISTERED_LEXICONS.add(lexicon);
 
         lexicon.load();
         lexicon.save();
     }
 
-    public static void registerListener(Event eventType, Runnable listener) {
+    @Override
+    public void registerListener(Event eventType, Runnable listener) {
         LISTENERS.put(eventType, listener);
     }
 
-    public static void reload() {
+    @Override
+    public Path getConfigPath() {
+        return Services.PLATFORM.getConfigPath();
+    }
+
+
+    public void reload() {
         LISTENERS.forEach((event, runnable) -> {
             if (event == Event.RELOAD) runnable.run();
         });

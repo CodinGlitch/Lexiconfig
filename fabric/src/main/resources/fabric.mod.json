@@ -34,7 +34,6 @@
     },
     "suggests": {
         "another-mod": "*"
-    },
-    "accessWidener" : "lexiconfig.accesswidener"
+    }
 }
   

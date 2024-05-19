@@ -3,6 +3,7 @@ plugins {
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
     id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 base {
     archivesName = "${mod_name}-forge-${minecraft_version}"
@@ -13,6 +14,8 @@ mixin {
     config("${mod_id}.mixins.json")
     config("${mod_id}.forge.mixins.json")
 }
+
+jarJar.enable()
 
 minecraft {
     mappings channel: 'official', version: minecraft_version
@@ -76,18 +79,31 @@ sourceSets.main.resources.srcDir 'src/generated/resources'
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    compileOnly project(":common")
     annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
+
+    implementation project(':common')
+
+    implementation "com.electronwill.night-config:core:${night_config_version}"
+    jarJar(group: 'com.electronwill.night-config', name: 'core', version: '[3.0,4.0)')
+}
+
+tasks.named('jarJar') {
+    archiveClassifier.set('')
+}
+project.afterEvaluate {
+    project.reobfJar.dependsOn(tasks.named('jarJar'))
+    project.reobfJarJar.dependsOn(jar)
 }
 
 tasks.withType(JavaCompile).configureEach {
-    source(project(":common").sourceSets.main.allSource)
+    source(project(":common").sourceSets.main.allSource, project(":api").sourceSets.main.allSource)
 }
 tasks.withType(Javadoc).configureEach {
-    source(project(":common").sourceSets.main.allJava)
+    source(project(":common").sourceSets.main.allJava, project(":api").sourceSets.main.allJava)
 }
 tasks.named("sourcesJar", Jar) {
     from(project(":common").sourceSets.main.allSource)
+    from(project(":api").sourceSets.main.allSource)
 }
 
 processResources {
@@ -98,15 +114,23 @@ jar.finalizedBy('reobfJar')
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            artifactId base.archivesName.get()
-            from components.java
-            fg.component(it)
+        maven(MavenPublication) {
+            artifactId artifact_id
+            artifact(jar.archivePath) {
+                builtBy build
+                classifier null
+            }
         }
     }
     repositories {
         maven {
-            url "file://" + System.getenv("local_maven")
+            name = 'codinglitch'
+            url = 'https://maven.codinglitch.com/repository/releases/'
+
+            credentials {
+                username = "$repository_username"
+                password = "$repository_password"
+            }
         }
     }
 }

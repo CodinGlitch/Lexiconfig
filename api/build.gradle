@@ -1,0 +1,72 @@
+plugins {
+    id 'idea'
+    id 'java'
+    id 'maven-publish'
+    id 'org.spongepowered.gradle.vanilla' version '0.2.1-SNAPSHOT'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+base {
+    archivesName = "${mod_name}-api"
+}
+minecraft {
+    version(minecraft_version)
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs += [
+                    'src/main/generated'
+            ]
+        }
+    }
+}
+
+dependencies {
+    implementation "com.electronwill.night-config:core:${night_config_version}"
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId = "lexiconfig-api"
+            from components.java
+
+            pom {
+                name = "$mod_name"
+                description = "$description"
+                url = 'https://codinglitch.com/'
+                licenses {
+                    license {
+                        name = 'The GNU General Public License, Version 3.0'
+                        url = 'https://www.gnu.org/licenses/gpl-3.0.en.html'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'codinglitch'
+                        name = 'CodinGlitch'
+                        email = 'developer@codinglitch.com'
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = 'codinglitch'
+            url = 'https://maven.codinglitch.com/repository/releases/'
+
+            credentials {
+                username = "$repository_username"
+                password = "$repository_password"
+            }
+        }
+    }
+}

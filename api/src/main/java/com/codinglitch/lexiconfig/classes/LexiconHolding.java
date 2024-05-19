@@ -1,6 +1,6 @@
 package com.codinglitch.lexiconfig.classes;
 
-import com.codinglitch.lexiconfig.Lexiconfig;
+import com.codinglitch.lexiconfig.LexiconfigApi;
 
 import javax.annotation.Nullable;
 
@@ -16,7 +16,7 @@ public class LexiconHolding {
             return this.getClass().getField(name).get(this);
         } catch (NoSuchFieldException ignored) {
         } catch (IllegalAccessException e) {
-            Lexiconfig.warn(e);
+            LexiconfigApi.warn(e);
         }
 
         return null;

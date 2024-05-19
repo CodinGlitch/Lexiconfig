@@ -1,11 +1,10 @@
 package com.codinglitch.lexiconfig.classes;
 
+import com.codinglitch.lexiconfig.LexiconfigApi;
 import com.codinglitch.lexiconfig.annotations.Lexicon;
 import com.codinglitch.lexiconfig.annotations.LexiconEntry;
 import com.codinglitch.lexiconfig.annotations.LexiconPage;
-import com.codinglitch.lexiconfig.platform.Services;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import com.electronwill.nightconfig.toml.TomlWriter;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
@@ -16,7 +15,7 @@ public abstract class LexiconData extends LexiconHolding {
 
     public Path getPath() {
         Lexicon annotation = this.getClass().getAnnotation(Lexicon.class);
-        return Services.PLATFORM.getConfigPath().resolve(annotation.name() + ".toml");
+        return LexiconfigApi.INSTANCE.getConfigPath().resolve(annotation.name() + ".toml");
     }
 
     private void parse(Object object, String path, CommentedFileConfig config, boolean writing) {
@@ -34,7 +33,14 @@ public abstract class LexiconData extends LexiconHolding {
                         config.set(fullPath, value);
                         config.setComment(fullPath, entry.comment());
                     } else {
-                        field.set(object, config.getOrElse(fullPath, value));
+                        Object configValue = config.getOrElse(fullPath, value);
+                        if (configValue.getClass() != value.getClass()) {
+                            LexiconfigApi.warn("Saved config value \"{}\" did not match the one provided! ([{}] {} saved vs. [{}] {} default) It will be replaced with the default value.",
+                                    field.getName(), configValue.getClass(), configValue, value.getClass(), value
+                            );
+                        } else {
+                            field.set(object, configValue);
+                        }
                     }
 
                 } catch (IllegalAccessException e) {
@@ -44,6 +50,10 @@ public abstract class LexiconData extends LexiconHolding {
                 LexiconPage page = field.getAnnotation(LexiconPage.class);
                 String fieldPath = page.path().equals("") ? field.getName() : page.path();
                 String fullPath = path.equals("") ? fieldPath : path+"."+fieldPath;
+
+                if (writing) {
+                    config.setComment(fullPath, page.comment());
+                }
 
                 try {
                     parse(field.get(object), fullPath, config, writing);
@@ -72,6 +82,4 @@ public abstract class LexiconData extends LexiconHolding {
 
         config.close();
     }
-
-    public TomlWriter writer = new TomlWriter();
 }

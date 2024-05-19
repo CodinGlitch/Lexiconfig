@@ -3,6 +3,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'fabric-loom' version '1.2-SNAPSHOT'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 base {
     archivesName = "${mod_name}-fabric-${minecraft_version}"
@@ -13,12 +14,11 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
-    implementation project(":common")
+
+    implementation project(':common')
 
     implementation "com.electronwill.night-config:core:${night_config_version}"
-    implementation "com.electronwill.night-config:toml:${night_config_version}"
     include "com.electronwill.night-config:core:${night_config_version}"
-    include "com.electronwill.night-config:toml:${night_config_version}"
 }
 
 loom {
@@ -54,13 +54,14 @@ loom {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    source(project(":common").sourceSets.main.allSource)
+    source(project(":common").sourceSets.main.allSource, project(":api").sourceSets.main.allSource)
 }
 tasks.withType(Javadoc).configureEach {
-    source(project(":common").sourceSets.main.allJava)
+    source(project(":common").sourceSets.main.allJava, project(":api").sourceSets.main.allJava)
 }
 tasks.named("sourcesJar", Jar) {
     from(project(":common").sourceSets.main.allSource)
+    from(project(":api").sourceSets.main.allSource)
 }
 
 processResources {
@@ -69,14 +70,23 @@ processResources {
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            artifactId base.archivesName.get()
-            from components.java
+        maven(MavenPublication) {
+            artifactId artifact_id
+            artifact(jar.archivePath) {
+                builtBy build
+                classifier null
+            }
         }
     }
     repositories {
         maven {
-            url "file://" + System.getenv("local_maven")
+            name = 'codinglitch'
+            url = 'https://maven.codinglitch.com/repository/releases/'
+
+            credentials {
+                username = "$repository_username"
+                password = "$repository_password"
+            }
         }
     }
 }
