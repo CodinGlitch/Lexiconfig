@@ -6,10 +6,13 @@ import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class LexiconfigApi {
     protected static final List<LexiconData> PRE_REGISTERED_LEXICONS = new ArrayList<>();
+    protected static final Map<Event, Runnable> LISTENERS = new HashMap<>();
 
     public static LexiconfigApi INSTANCE;
 
@@ -18,6 +21,7 @@ public abstract class LexiconfigApi {
     }
 
     public enum Event {
+        STARTUP,
         RELOAD
     }
 
@@ -45,7 +49,9 @@ public abstract class LexiconfigApi {
         PRE_REGISTERED_LEXICONS.add(lexicon);
     }
 
-    public abstract Path getConfigPath();
+    public static void registerListener(Event eventType, Runnable listener) {
+        LISTENERS.put(eventType, listener);
+    }
 
-    public abstract void registerListener(Event eventType, Runnable listener);
+    public abstract Path getConfigPath();
 }
