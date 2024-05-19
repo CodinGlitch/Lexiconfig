@@ -23,7 +23,7 @@ public class Lexiconfig extends LexiconfigApi {
     }
 
     @Override
-    public void register(LexiconData lexicon) {
+    public void registerLexicon(LexiconData lexicon) {
         REGISTERED_LEXICONS.add(lexicon);
 
         lexicon.load();
@@ -48,6 +48,6 @@ public class Lexiconfig extends LexiconfigApi {
     }
 
     public static void initialize() {
-
+        PRE_REGISTERED_LEXICONS.forEach(API::registerLexicon);
     }
 }

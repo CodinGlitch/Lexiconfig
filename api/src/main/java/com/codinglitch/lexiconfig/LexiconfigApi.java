@@ -5,8 +5,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class LexiconfigApi {
+    protected static final List<LexiconData> PRE_REGISTERED_LEXICONS = new ArrayList<>();
+
     public static LexiconfigApi INSTANCE;
 
     public LexiconfigApi() {
@@ -31,7 +35,15 @@ public abstract class LexiconfigApi {
         LOGGER.error(String.valueOf(object), substitutions);
     }
 
-    public abstract void register(LexiconData lexicon);
+    protected abstract void registerLexicon(LexiconData lexicon);
+    public static void register(LexiconData lexicon) {
+        if (LexiconfigApi.INSTANCE != null) {
+            LexiconfigApi.INSTANCE.registerLexicon(lexicon);
+            return;
+        }
+
+        PRE_REGISTERED_LEXICONS.add(lexicon);
+    }
 
     public abstract Path getConfigPath();
 
