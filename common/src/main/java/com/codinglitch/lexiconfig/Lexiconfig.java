@@ -26,6 +26,8 @@ public class Lexiconfig extends LexiconfigApi {
     public void registerLexicon(LexiconData lexicon) {
         REGISTERED_LEXICONS.add(lexicon);
 
+        Lexiconfig.info("Registering lexicon {}", lexicon.getClass().getName());
+
         lexicon.load();
         lexicon.save();
     }
