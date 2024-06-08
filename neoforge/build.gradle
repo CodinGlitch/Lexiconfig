@@ -4,9 +4,15 @@ plugins {
     id 'net.neoforged.gradle.userdev' version '7.0.41'
     id 'java-library'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id "com.modrinth.minotaur" version "2.+"
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
+
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/curseforge.gradle'
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/modrinth.gradle'
+
 base {
-    archivesName = "${mod_name}-neoforge-${minecraft_version}"
+    archivesName = "${mod_name}-neoforge"
 }
 
 // Automatically enable neoforge AccessTransformers if the file exists
@@ -36,8 +42,6 @@ runs {
     }
 }
 
-jarJar.enable()
-
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
@@ -46,14 +50,9 @@ dependencies {
     implementation project(':common')
 
     implementation "com.electronwill.night-config:core:${night_config_version}"
-    jarJar(group: 'com.electronwill.night-config', name: 'core', version: '[3.0,4.0)')
-    jarJar(group: 'com.electronwill.night-config', name: 'toml', version: '[3.0,4.0)')
+    implementation "com.electronwill.night-config:toml:${night_config_version}"
+    // JiJ not needed here as forge ships with night-config (i think)
 }
-
-tasks.named('jarJar') {
-    archiveClassifier.set('')
-}
-project.build.dependsOn(tasks.named('jarJar'))
 
 // NeoGradle compiles the game, but we don't want to add our common code to the game's code
 Spec<Task> notNeoTask = { Task it -> !it.name.startsWith("neo") } as Spec<Task>

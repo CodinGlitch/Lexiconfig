@@ -4,9 +4,15 @@ plugins {
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
     id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id "com.modrinth.minotaur" version "2.+"
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
+
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/curseforge.gradle'
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/modrinth.gradle'
+
 base {
-    archivesName = "${mod_name}-forge-${minecraft_version}"
+    archivesName = "${mod_name}-forge"
 }
 mixin {
     add(sourceSets.main, "${mod_id}.refmap.json")
@@ -14,8 +20,6 @@ mixin {
     config("${mod_id}.mixins.json")
     config("${mod_id}.forge.mixins.json")
 }
-
-jarJar.enable()
 
 minecraft {
     mappings channel: 'official', version: minecraft_version
@@ -84,16 +88,8 @@ dependencies {
     implementation project(':common')
 
     implementation "com.electronwill.night-config:core:${night_config_version}"
-    jarJar(group: 'com.electronwill.night-config', name: 'core', version: '[3.0,4.0)')
-    jarJar(group: 'com.electronwill.night-config', name: 'toml', version: '[3.0,4.0)')
-}
-
-tasks.named('jarJar') {
-    archiveClassifier.set('')
-}
-project.afterEvaluate {
-    project.reobfJar.dependsOn(tasks.named('jarJar'))
-    project.reobfJarJar.dependsOn(jar)
+    implementation "com.electronwill.night-config:toml:${night_config_version}"
+    // JiJ not needed here as forge ships with night-config (i think)
 }
 
 tasks.withType(JavaCompile).configureEach {
