@@ -7,5 +7,7 @@ public class FabricLexiconfig implements ModInitializer {
     @Override
     public void onInitialize() {
         Lexiconfig.initialize();
+        Lexiconfig.postInitialize();
     }
+
 }

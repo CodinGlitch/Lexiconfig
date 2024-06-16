@@ -13,6 +13,8 @@ public interface PlatformHelper {
 
     Path getConfigPath();
 
+    void shelveLexicons();
+
     /**
      * Checks if a mod with the given id is loaded.
      *

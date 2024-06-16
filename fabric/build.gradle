@@ -22,6 +22,7 @@ dependencies {
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
     implementation project(':common')
+    compileOnly project(':api')
 
     implementation "com.electronwill.night-config:core:${night_config_version}"
     implementation "com.electronwill.night-config:toml:${night_config_version}"

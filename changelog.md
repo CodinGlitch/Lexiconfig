@@ -1,1 +1,3 @@
-- Fixed issue with Forge
+- Massive API changes
+- Expanded usable event types
+- Allowed for configuration reloading through /reload

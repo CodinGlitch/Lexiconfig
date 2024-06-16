@@ -1,5 +1,8 @@
 package com.codinglitch.lexiconfig.platform;
 
+import com.codinglitch.lexiconfig.LexiconfigApi;
+import com.codinglitch.lexiconfig.Library;
+import com.codinglitch.lexiconfig.Lexiconfig;
 import com.codinglitch.lexiconfig.platform.services.PlatformHelper;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -15,6 +18,14 @@ public class FabricPlatformHelper implements PlatformHelper {
     @Override
     public Path getConfigPath() {
         return FabricLoader.getInstance().getConfigDir();
+    }
+
+    @Override
+    public void shelveLexicons() {
+        FabricLoader.getInstance().invokeEntrypoints(Lexiconfig.ID, Library.class, library -> {
+            LexiconfigApi.LIBRARIES.add(library);
+            library.shelveLexicons();
+        });
     }
 
     @Override

@@ -48,6 +48,7 @@ dependencies {
     implementation "net.neoforged:neoforge:${neoforge_version}"
 
     implementation project(':common')
+    compileOnly project(':api')
 
     implementation "com.electronwill.night-config:core:${night_config_version}"
     implementation "com.electronwill.night-config:toml:${night_config_version}"
