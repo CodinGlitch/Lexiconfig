@@ -8,6 +8,7 @@ plugins {
     id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
 
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/repository-publishers/codinglitch.gradle'
 apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/curseforge.gradle'
 apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/modrinth.gradle'
 
@@ -73,27 +74,4 @@ tasks.named("sourcesJar", Jar) {
 
 tasks.withType(ProcessResources).matching(notNeoTask).configureEach {
     from project(":common").sourceSets.main.resources
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            artifactId artifact_id
-            artifact(jar.archivePath) {
-                builtBy build
-                classifier null
-            }
-        }
-    }
-    repositories {
-        maven {
-            name = 'codinglitch'
-            url = 'https://maven.codinglitch.com/repository/releases/'
-
-            credentials {
-                username = "$repository_username"
-                password = "$repository_password"
-            }
-        }
-    }
 }
