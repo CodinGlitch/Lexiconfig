@@ -50,7 +50,7 @@ fabric.mod.json
 //...
 "entrypoints": {
   "lexiconfig": [
-    "com.codinglitch.vibrativevoice.VibrativeVoiceLibrary"
+    "com.path.to.MyNewLibrary"
   ]
 }
 //...
