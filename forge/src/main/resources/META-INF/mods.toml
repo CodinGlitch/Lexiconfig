@@ -24,3 +24,6 @@ mandatory = true
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
+
+[modproperties.lexiconfig]
+configuredProviders=[ "com.codinglitch.lexiconfig.compat.configured.LexiconfigProvider" ]

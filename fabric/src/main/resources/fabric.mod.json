@@ -33,7 +33,13 @@
         "java": "*"
     },
     "suggests": {
-        "another-mod": "*"
+    },
+    "custom": {
+        "configured": {
+            "providers": [
+                "com.codinglitch.lexiconfig.compat.configured.LexiconfigProvider"
+            ]
+        }
     }
 }
   

@@ -3,7 +3,6 @@ plugins {
     id 'maven-publish'
     id 'net.neoforged.gradle.userdev' version '7.0.41'
     id 'java-library'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id "com.modrinth.minotaur" version "2.+"
     id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
@@ -54,6 +53,10 @@ dependencies {
     implementation "com.electronwill.night-config:core:${night_config_version}"
     implementation "com.electronwill.night-config:toml:${night_config_version}"
     // JiJ not needed here as forge ships with night-config (i think)
+
+    // Compatibilities
+    compileOnly "com.mrcrayfish:configured-common:${configured_version}"
+    runtimeOnly "com.mrcrayfish:configured-neoforge:${configured_version}"
 }
 
 // NeoGradle compiles the game, but we don't want to add our common code to the game's code

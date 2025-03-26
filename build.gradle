@@ -1,7 +1,6 @@
 plugins {
     // Required for NeoGradle
     id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.7"
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 subprojects {
@@ -48,7 +47,14 @@ subprojects {
             url = 'https://maven.blamejared.com'
         }
 
-        maven { url 'https://maven.maxhenkel.de/repository/public' }
+        maven {
+            name = "MrCrayfish (GitHub)"
+            url = "https://maven.pkg.github.com/MrCrayfish/Maven"
+            credentials {
+                username = "CodinGlitch"
+                password = project.property("github_token")
+            }
+        }
 
         maven {
             name = "Modrinth"
