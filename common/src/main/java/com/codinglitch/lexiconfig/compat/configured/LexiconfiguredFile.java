@@ -51,7 +51,12 @@ public class LexiconfiguredFile implements IModConfig {
 
     @Override
     public ConfigType getType() {
-        return null;
+        return switch (lexicon.getLocation()) {
+            case COMMON -> ConfigType.UNIVERSAL;
+            case CLIENT -> ConfigType.CLIENT;
+            case SERVER -> ConfigType.SERVER;
+            case WORLD -> ConfigType.WORLD;
+        };
     }
 
     @Override

@@ -54,7 +54,7 @@ public class LexiconfiguredValue<T> implements IConfigValue<T> {
 
     @Override
     public boolean isChanged() {
-        return value.equals(entry.get().orElse(null));
+        return !value.equals(entry.get().orElse(null));
     }
 
     @Override
@@ -77,7 +77,7 @@ public class LexiconfiguredValue<T> implements IConfigValue<T> {
     @Nullable
     @Override
     public Component getValidationHint() {
-        return null;
+        return Component.empty();
     }
 
     @Override

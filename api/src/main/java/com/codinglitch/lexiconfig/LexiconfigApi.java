@@ -55,7 +55,9 @@ public abstract class LexiconfigApi {
      * These are the possible locations to store a lexicon at.
      */
     public enum Location {
-        CONFIG,
+        COMMON,
+        CLIENT,
+        SERVER,
         WORLD
     }
 

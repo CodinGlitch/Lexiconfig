@@ -9,12 +9,17 @@ import com.mrcrayfish.configured.api.IConfigValue;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class LexiconfiguredEntry<T> implements IConfigEntry {
     public final LexiconEntryData<T> entry;
+
+    public List<LexiconfiguredEntry<?>> children = null;
+    public LexiconfiguredValue<T> value;
 
     public LexiconfiguredEntry(LexiconEntryData<T> entry) {
         this.entry = entry;
@@ -24,7 +29,11 @@ public class LexiconfiguredEntry<T> implements IConfigEntry {
     public List<IConfigEntry> getChildren() {
         if (entry.get().orElse(null) instanceof LexiconSubstrate substrate) {
             List<LexiconEntryData<?>> entries = substrate.getContents(Objects::nonNull);
-            return entries.stream().map(LexiconfiguredEntry::new).collect(Collectors.toList());
+            if (children == null) {
+                children = entries.stream().map(LexiconfiguredEntry::new).collect(Collectors.toList());
+            }
+
+            return children.stream().collect(Collectors.toUnmodifiableList()); // ??? okay??
         }
 
         return List.of();
@@ -43,7 +52,11 @@ public class LexiconfiguredEntry<T> implements IConfigEntry {
     @Nullable
     @Override
     public IConfigValue<?> getValue() {
-        return new LexiconfiguredValue<>(entry);
+        if (value == null) {
+            value = new LexiconfiguredValue<>(entry);
+        }
+
+        return value;
     }
 
     @Override
@@ -54,12 +67,12 @@ public class LexiconfiguredEntry<T> implements IConfigEntry {
     @Nullable
     @Override
     public Component getTooltip() {
-        return null;
+        return Component.literal(entry.getComment());
     }
 
     @Nullable
     @Override
     public String getTranslationKey() {
-        return null;
+        return "";
     }
 }

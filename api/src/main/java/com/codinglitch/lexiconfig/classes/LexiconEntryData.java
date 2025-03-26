@@ -1,6 +1,7 @@
 package com.codinglitch.lexiconfig.classes;
 
 import com.codinglitch.lexiconfig.LexiconfigApi;
+import com.codinglitch.lexiconfig.annotations.LexiconEntry;
 
 import java.lang.reflect.Field;
 import java.util.Optional;
@@ -42,6 +43,8 @@ public class LexiconEntryData<T> {
         return field.getName();
     }
     public String getComment() {
-        return field.getName();
+        LexiconEntry entry = field.getAnnotation(LexiconEntry.class);
+        if (entry == null) return "";
+        return entry.comment();
     }
 }

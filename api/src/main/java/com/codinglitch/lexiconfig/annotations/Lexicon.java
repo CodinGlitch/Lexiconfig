@@ -11,6 +11,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Lexicon {
     String name() default "";
-    LexiconfigApi.Location location() default LexiconfigApi.Location.CONFIG;
+    LexiconfigApi.Location location() default LexiconfigApi.Location.COMMON;
     LexiconfigApi.Extension extension() default LexiconfigApi.Extension.TOML;
 }
