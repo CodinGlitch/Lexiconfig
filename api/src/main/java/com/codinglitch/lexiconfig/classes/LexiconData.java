@@ -9,13 +9,28 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 
-public abstract class LexiconData extends LexiconHolding {
+public abstract class LexiconData extends LexiconSubstrate {
     public LexiconData() {
+    }
+
+    public String getName() {
+        Lexicon annotation = this.getClass().getAnnotation(Lexicon.class);
+        return annotation.name();
+    }
+
+    public LexiconfigApi.Location getLocation() {
+        Lexicon annotation = this.getClass().getAnnotation(Lexicon.class);
+        return annotation.location();
+    }
+
+    public LexiconfigApi.Extension getExtension() {
+        Lexicon annotation = this.getClass().getAnnotation(Lexicon.class);
+        return annotation.extension();
     }
 
     public Path getPath() {
         Lexicon annotation = this.getClass().getAnnotation(Lexicon.class);
-        return LexiconfigApi.INSTANCE.getConfigPath().resolve(annotation.name() + ".toml");
+        return LexiconfigApi.INSTANCE.getConfigPath(annotation.location()).resolve(annotation.name() + ".toml");
     }
 
     private void parse(Object object, String path, CommentedFileConfig config, boolean writing) {

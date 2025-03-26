@@ -5,10 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 public abstract class LexiconfigApi {
@@ -55,14 +52,52 @@ public abstract class LexiconfigApi {
     }
 
     /**
+     * These are the possible locations to store a lexicon at.
+     */
+    public enum Location {
+        CONFIG,
+        WORLD
+    }
+
+    /**
+     * These are the possible extensions to save the config as.
+     */
+    public enum Extension {
+        TOML(".toml");
+
+        public final String file;
+
+        Extension(String file) {
+            this.file = file;
+        }
+    }
+
+    /**
      * This method is used to shelve a lexicon to be registered for reloading events, etc. and should be called within the {@code shelveLexicons} method of a {@code LexiconLibrary}.
      * @see Library
      * @see Library#shelveLexicons
+     * @param library The library to shelve the lexicon in
      * @param lexicon The lexicon to shelve
      */
-    public static void shelveLexicon(LexiconData lexicon) {
+    public static void shelveLexicon(Library library, LexiconData lexicon) {
+        library.shelve(lexicon);
         SHELVED_LEXICONS.add(lexicon);
         info("Shelved lexicon {}!", lexicon);
+    }
+
+    /**
+     * Searches for a library with the matching mod ID.
+     * @see Library
+     * @see Library#shelveLexicons
+     * @param id The id of the mod to search for
+     * @return The library, if found
+     */
+    public static Optional<Library> findLibrary(String id) {
+        for (Library library : LIBRARIES) {
+            if (id.equals(library.getName())) return Optional.of(library);
+        }
+
+        return Optional.empty();
     }
 
     /**
@@ -84,5 +119,5 @@ public abstract class LexiconfigApi {
      * This is used to retrieve the configuration folder path, dependent on the modloader.
      * @return The path of the config folder
      */
-    public abstract Path getConfigPath();
+    public abstract Path getConfigPath(Location location);
 }

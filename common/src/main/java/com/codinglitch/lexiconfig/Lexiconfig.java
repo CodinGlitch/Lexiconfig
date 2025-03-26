@@ -21,7 +21,7 @@ public class Lexiconfig extends LexiconfigApi {
     }
 
     @Override
-    public Path getConfigPath() {
+    public Path getConfigPath(Location location) {
         return Services.PLATFORM.getConfigPath();
     }
 
@@ -42,6 +42,23 @@ public class Lexiconfig extends LexiconfigApi {
         info("Finished lexicon revision!");
     }
 
+    public static void publish() {
+        info("Starting lexicon publishing!");
+        API.callEvent(EventType.PRE_REVISION, new RevisionEvent());
+
+        for (LexiconData lexicon : SHELVED_LEXICONS) {
+            API.callEvent(EventType.PRE_LEXICON_REVISION, new RevisionEvent.Lexicon(lexicon));
+
+            lexicon.save();
+            lexicon.load();
+
+            API.callEvent(EventType.POST_LEXICON_REVISION, new RevisionEvent.Lexicon(lexicon));
+        }
+
+        API.callEvent(EventType.POST_REVISION, new RevisionEvent());
+        info("Finished lexicon publishing!");
+    }
+
     public static void initialize() {
         Services.PLATFORM.shelveLexicons();
     }
@@ -51,6 +68,8 @@ public class Lexiconfig extends LexiconfigApi {
 
         for (LexiconData lexicon : SHELVED_LEXICONS) {
             info("Cataloging lexicon {}!", lexicon);
+            lexicon.catalog();
+
             lexicon.load();
             lexicon.save();
         }
