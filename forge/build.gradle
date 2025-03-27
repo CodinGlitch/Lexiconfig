@@ -93,7 +93,7 @@ dependencies {
     // JiJ not needed here as forge ships with night-config (i think)
 
     // Compatibilities
-    compileOnly fg.deobf("com.mrcrayfish:configured-common:${configured_version}")
+    implementation fg.deobf("com.mrcrayfish:configured-common:${configured_version}")
     runtimeOnly fg.deobf("com.mrcrayfish:configured-forge:${configured_version}")
 }
 
