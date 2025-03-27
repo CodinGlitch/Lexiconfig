@@ -17,10 +17,13 @@ public class LexiconfigProvider implements IModConfigProvider {
         Optional<Library> optionalLibrary = Lexiconfig.findLibrary(modContext.modId());
         if (optionalLibrary.isEmpty()) return Set.of();
 
+        Lexiconfig.info("Providing configured configs for valid mod {}", modContext.modId());
+
         Library library = optionalLibrary.get();
         Set<IModConfig> configs = new HashSet<>();
         for (LexiconData lexicon : library.LEXICONS) {
             configs.add(new LexiconfiguredFile(library, lexicon));
+            Lexiconfig.info("Loaded lexiconfigured library", lexicon.getName());
         }
 
         return configs;
