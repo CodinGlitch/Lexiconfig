@@ -71,7 +71,7 @@ public class LexiconfiguredValue<T> implements IConfigValue<T> {
     @Nullable
     @Override
     public String getTranslationKey() {
-        return "";
+        return entry.getLang();
     }
 
     @Nullable

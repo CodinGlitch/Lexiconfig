@@ -47,4 +47,9 @@ public class LexiconEntryData<T> {
         if (entry == null) return "";
         return entry.comment();
     }
+    public String getLang() {
+        LexiconEntry entry = field.getAnnotation(LexiconEntry.class);
+        if (entry == null) return "";
+        return entry.lang();
+    }
 }
