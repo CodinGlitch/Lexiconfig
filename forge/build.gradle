@@ -94,7 +94,17 @@ dependencies {
 
     // Compatibilities
     implementation fg.deobf("com.mrcrayfish:configured-common:${configured_version}")
-    runtimeOnly fg.deobf("com.mrcrayfish:configured-forge:${configured_version}")
+
+    // Config mods
+    if (config_mod == "configured") {
+        runtimeOnly fg.deobf("com.mrcrayfish:configured-forge:${configured_version}")
+    } else if (config_mod == "cloth_config") {
+
+    } else if (config_mod == "owo") {
+
+    } else if (config_mod == "config_screens") {
+
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
