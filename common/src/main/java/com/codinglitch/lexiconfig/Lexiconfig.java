@@ -32,6 +32,7 @@ public class Lexiconfig extends LexiconfigApi {
         for (LexiconData lexicon : SHELVED_LEXICONS) {
             API.callEvent(EventType.PRE_LEXICON_REVISION, new RevisionEvent.Lexicon(lexicon));
 
+            debug("Revising lexicon {}..", lexicon.getName());
             lexicon.load();
             lexicon.save();
 
@@ -49,6 +50,7 @@ public class Lexiconfig extends LexiconfigApi {
         for (LexiconData lexicon : SHELVED_LEXICONS) {
             API.callEvent(EventType.PRE_LEXICON_REVISION, new RevisionEvent.Lexicon(lexicon));
 
+            debug("Publishing lexicon {}..", lexicon.getName());
             lexicon.save();
             lexicon.load();
 
@@ -59,8 +61,13 @@ public class Lexiconfig extends LexiconfigApi {
         info("Finished lexicon publishing!");
     }
 
+    static {
+        info("Beginning lexicon shelving!");
+        Services.PLATFORM.shelveLexicons(); // static initializer since initialize sometimes fires too late
+    }
+
     public static void initialize() {
-        Services.PLATFORM.shelveLexicons();
+
     }
 
     public static void postInitialize() {

@@ -14,6 +14,8 @@ import java.util.Set;
 public class LexiconfigProvider implements IModConfigProvider {
     @Override
     public Set<IModConfig> getConfigurationsForMod(ModContext modContext) {
+        Lexiconfig.debug("Attempting to find configured configs for mod {}", modContext.modId());
+
         Optional<Library> optionalLibrary = Lexiconfig.findLibrary(modContext.modId());
         if (optionalLibrary.isEmpty()) return Set.of();
 
