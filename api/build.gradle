@@ -1,11 +1,15 @@
 plugins {
     id 'java-library'
     id 'org.spongepowered.gradle.vanilla' version '0.2.1-SNAPSHOT'
+    id 'maven-publish'
 }
 
 base {
-    archivesName = "${mod_name}-api"
+    archivesName = "${mod_id}-${project.name}"
 }
+
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/repository-publishers/codinglitch.gradle'
+
 minecraft {
     version(minecraft_version)
 }
