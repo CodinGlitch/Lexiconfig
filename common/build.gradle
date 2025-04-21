@@ -14,8 +14,6 @@ minecraft {
 dependencies {
     compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
 
-    implementation project(':api')
-
     // Compatibilities
     compileOnly "com.mrcrayfish:configured-common:${configured_version}"
 }
