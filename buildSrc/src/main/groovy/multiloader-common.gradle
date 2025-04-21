@@ -3,9 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
-
 base {
-    archivesName = "${mod_id}-${project.name}-${minecraft_version}"
+    archivesName = "${mod_id}-${project.name}"
 }
 
 java {
@@ -45,19 +44,28 @@ repositories {
     maven { url 'https://maven.nucleoid.xyz' }
 }
 
-dependencies {
-    implementation 'org.jetbrains:annotations:24.1.0'
-}
-
 // Declare capabilities on the outgoing configurations.
 // Read more about capabilities here: https://docs.gradle.org/current/userguide/component_capabilities.html#sec:declaring-additional-capabilities-for-a-local-component
 ['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
     configurations."$variant".outgoing {
+        capability("$group:${project.name}:$version")
+        capability("$group:${base.archivesName.get()}:$version")
         capability("$group:$mod_id-${project.name}-${minecraft_version}:$version")
+        capability("$group:$mod_id-${project.name}:$version")
         capability("$group:$mod_id:$version")
     }
     publishing.publications.configureEach {
         suppressPomMetadataWarningsFor(variant)
+    }
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations:24.1.0'
+
+    compileOnly(project(':api')) {
+        capabilities {
+            requireCapability "$group:api"
+        }
     }
 }
 
@@ -111,18 +119,4 @@ processResources {
         expand expandProps
     }
     inputs.properties(expandProps)
-}
-
-publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            artifactId base.archivesName.get()
-            from components.java
-        }
-    }
-    repositories {
-        maven {
-            url System.getenv("local_maven_url")
-        }
-    }
 }
