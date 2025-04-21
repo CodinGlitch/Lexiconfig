@@ -1,7 +1,13 @@
 plugins {
     id 'multiloader-loader'
     id 'net.neoforged.gradle.userdev' version '7.0.107'
+    id "com.modrinth.minotaur" version "2.+"
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
+
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/repository-publishers/codinglitch.gradle'
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/curseforge.gradle'
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/modrinth.gradle'
 
 // Automatically enable neoforge AccessTransformers if the file exists
 // This location is hardcoded in FML and can not be changed.
@@ -12,7 +18,7 @@ if (at.exists()) {
 }
 runs {
     configureEach {
-        modSource project.sourceSets.main
+        modSource project.sourceSets.development
     }
     client {
         systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
@@ -36,17 +42,12 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     implementation "net.neoforged:neoforge:${neoforge_version}"
 
-    implementation project(':api')
-
-    implementation "com.electronwill.night-config:core:${night_config_version}"
-    implementation "com.electronwill.night-config:toml:${night_config_version}"
-
     // Compatibilities
-    implementation "com.mrcrayfish:configured-common:${configured_version}"
+    compileOnly "com.mrcrayfish:configured-common:${configured_version}"
 
     // Config mods
     if (config_mod == "configured") {
-        runtimeOnly "com.mrcrayfish:configured-neoforge:${configured_version}"
+        devOnly "com.mrcrayfish:configured-neoforge:${configured_version}"
     } else if (config_mod == "cloth_config") {
 
     } else if (config_mod == "owo") {
