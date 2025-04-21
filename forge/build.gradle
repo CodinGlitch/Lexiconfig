@@ -2,10 +2,14 @@ plugins {
     id 'multiloader-loader'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
     id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
+    id "com.modrinth.minotaur" version "2.+"
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
-base {
-    archivesName = "${mod_name}-forge-${minecraft_version}"
-}
+
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/repository-publishers/codinglitch.gradle'
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/curseforge.gradle'
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/modrinth.gradle'
+
 mixin {
     add(sourceSets.main, "${mod_id}.refmap.json")
 
@@ -33,7 +37,7 @@ minecraft {
             taskName 'Client'
             mods {
                 modClientRun {
-                    source sourceSets.main
+                    source sourceSets.development
                 }
             }
         }
@@ -44,7 +48,7 @@ minecraft {
             taskName 'Server'
             mods {
                 modServerRun {
-                    source sourceSets.main
+                    source sourceSets.development
                 }
             }
         }
@@ -56,7 +60,7 @@ minecraft {
             taskName 'Data'
             mods {
                 modDataRun {
-                    source sourceSets.main
+                    source sourceSets.development
                 }
             }
         }
@@ -69,18 +73,12 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
 
-    implementation project(':api')
-
-    implementation "com.electronwill.night-config:core:${night_config_version}"
-    implementation "com.electronwill.night-config:toml:${night_config_version}"
-    // JiJ not needed here as forge ships with night-config (i think)
-
     // Compatibilities
-    implementation fg.deobf("com.mrcrayfish:configured-common:${configured_version}")
+    compileOnly fg.deobf("com.mrcrayfish:configured-common:${configured_version}")
 
     // Config mods
     if (config_mod == "configured") {
-        runtimeOnly fg.deobf("com.mrcrayfish:configured-forge:${configured_version}")
+        devOnly fg.deobf("com.mrcrayfish:configured-forge:${configured_version}")
     } else if (config_mod == "cloth_config") {
 
     } else if (config_mod == "owo") {
@@ -88,17 +86,10 @@ dependencies {
     } else if (config_mod == "config_screens") {
 
     }
+
 }
 
 jar.finalizedBy('reobfJar')
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            fg.component(it)
-        }
-    }
-}
 
 sourceSets.each {
     def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
