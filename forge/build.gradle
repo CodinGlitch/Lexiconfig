@@ -10,6 +10,13 @@ apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main
 apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/curseforge.gradle'
 apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/modrinth.gradle'
 
+tasks.withType(GenerateModuleMetadata) {
+    enabled = false
+}
+components.java.withVariantsFromConfiguration(configurations.runtimeElements) {
+    skip()
+}
+
 mixin {
     add(sourceSets.main, "${mod_id}.refmap.json")
 
