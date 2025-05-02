@@ -96,6 +96,10 @@ dependencies {
 
 }
 
+tasks.named('jarJar') {
+    archiveClassifier = ''
+}
+jar.archiveClassifier = "slim"
 jar.finalizedBy('reobfJar')
 
 sourceSets.each {
