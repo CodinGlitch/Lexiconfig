@@ -1,3 +1,2 @@
-- Massive API changes
-- Expanded usable event types
-- Allowed for configuration reloading through /reload
+- Usage of optional for retrieving entries
+- Configured support
