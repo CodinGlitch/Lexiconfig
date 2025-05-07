@@ -19,11 +19,25 @@ public class LexiconSubstrate {
         return entries;
     }
 
-    public <T> Optional<T> getEntry(String name) {
+    public <T> Optional<LexiconEntryData<T>> getEntryData(String name) {
         LexiconEntryData<T> entry = (LexiconEntryData<T>) ENTRIES.get(name);
         if (entry == null) return Optional.empty();
 
+        return Optional.of(entry);
+    }
+
+    public <T> Optional<T> getEntry(String name) {
+        LexiconEntryData<T> entry = this.<T>getEntryData(name).orElse(null);
+        if (entry == null) return Optional.empty();
+
         return entry.get();
+    }
+
+    public <T> void setEntry(String name, T value) {
+        LexiconEntryData<T> entry = this.<T>getEntryData(name).orElse(null);
+        if (entry == null) return;
+
+        entry.set(value);
     }
 
     public void catalog() {
