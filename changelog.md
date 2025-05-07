@@ -1,2 +1,2 @@
-- Usage of optional for retrieving entries
-- Configured support
+- Unlocked 1.20.4 usage
+- Minor API changes
