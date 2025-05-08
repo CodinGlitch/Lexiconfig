@@ -6,10 +6,6 @@ plugins {
     id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
 
-apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/repository-publishers/codinglitch.gradle'
-apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/curseforge.gradle'
-apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/modrinth.gradle'
-
 tasks.withType(GenerateModuleMetadata) {
     enabled = false
 }
@@ -93,13 +89,14 @@ dependencies {
     } else if (config_mod == "config_screens") {
 
     }
-
 }
 
-tasks.named('jarJar') {
-    archiveClassifier = ''
+if (tasks.jarJar.enabled) {
+    tasks.named('jarJar') {
+        archiveClassifier = ''
+    }
+    jar.archiveClassifier = "slim"
 }
-jar.archiveClassifier = "slim"
 jar.finalizedBy('reobfJar')
 
 sourceSets.each {
@@ -107,3 +104,7 @@ sourceSets.each {
     it.output.resourcesDir = dir
     it.java.destinationDirectory = dir
 }
+
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/repository-publishers/codinglitch.gradle'
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/curseforge.gradle'
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/modrinth.gradle'
