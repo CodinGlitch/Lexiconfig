@@ -91,9 +91,16 @@ dependencies {
     }
 }
 
+// refmap workaround
+afterEvaluate {
+    configureReobfTaskForReobfJar.mustRunAfter compileJava
+    configureReobfTaskForReobfJarJar.mustRunAfter compileJava
+}
+
 if (tasks.jarJar.enabled) {
     tasks.named('jarJar') {
         archiveClassifier = ''
+        finalizedBy reobfJarJar
     }
     jar.archiveClassifier = "slim"
 }
