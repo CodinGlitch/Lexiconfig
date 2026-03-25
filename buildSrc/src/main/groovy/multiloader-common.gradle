@@ -10,7 +10,7 @@ def minecraft = libs.findVersion("minecraft").get()
 
 base {
     archivesName = "${mod_id}-${project.name}"
-    version = "${minecraft}-${version}"
+    version = "${version}"
 }
 
 java {
