@@ -3,22 +3,35 @@ plugins {
     id 'maven-publish'
 }
 
+def catalogs = project.extensions.getByType(VersionCatalogsExtension)
+def libs = catalogs.named("libs")
+
+def minecraft = libs.findVersion("minecraft").get()
+
 base {
-    archivesName = "${mod_id}-${project.name}-${minecraft_version}"
+    archivesName = "${mod_id}-${project.name}"
+    version = "${minecraft}-${version}"
 }
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(java_version)
+
     withSourcesJar()
     withJavadocJar()
 }
 
 repositories {
     mavenCentral()
-    maven {
-        name = 'Sponge / Mixin'
-        url = 'https://repo.spongepowered.org/repository/maven-public/'
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Sponge'
+                url = 'https://repo.spongepowered.org/repository/maven-public'
+            }
+        }
+        filter { includeGroupAndSubgroups('org.spongepowered') }
     }
+
     maven {
         name = 'BlameJared Maven (JEI / CraftTweaker / Bookshelf)'
         url = 'https://maven.blamejared.com'
@@ -34,6 +47,21 @@ repositories {
     }
 
     maven {
+        name = "Terraformers"
+        url = "https://maven.terraformersmc.com/"
+    }
+
+    maven { url 'https://maven.maxhenkel.de/repository/public' }
+    maven { url 'https://maven.nucleoid.xyz' }
+    maven { url 'https://maven.codinglitch.com/repository/releases' }
+
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
+
+    maven {
         name = "Modrinth"
         url = "https://api.modrinth.com/maven"
         content {
@@ -41,16 +69,38 @@ repositories {
         }
     }
 
-    maven { url 'https://maven.nucleoid.xyz' }
+    maven {
+        name = "Valkyrien Skies Internal"
+        url = 'https://maven.valkyrienskies.org'
+    }
+
+    maven { url = "https://mvn.devos.one/releases" }
+    maven { url = "https://mvn.devos.one/snapshots" }
+    maven { url = "https://maven.createmod.net" }
+    maven { url = "https://maven.tterrag.com" }
+    maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
+
+    maven {
+        url "https://maven.squiddev.cc"
+        content {
+            includeGroup("cc.tweaked")
+        }
+    }
+
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 }
 
 // Declare capabilities on the outgoing configurations.
 // Read more about capabilities here: https://docs.gradle.org/current/userguide/component_capabilities.html#sec:declaring-additional-capabilities-for-a-local-component
 ['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
     configurations."$variant".outgoing {
-        capability("$group:${project.name}:$version")
         capability("$group:${base.archivesName.get()}:$version")
-        capability("$group:$mod_id-${project.name}-${minecraft_version}:$version")
+        capability("$group:$mod_id-${project.name}-${minecraft}:$version")
         capability("$group:$mod_id-${project.name}:$version")
         capability("$group:$mod_id:$version")
     }
@@ -59,14 +109,17 @@ repositories {
     }
 }
 
-dependencies {
-    implementation 'org.jetbrains:annotations:24.1.0'
-
-    compileOnly(project(':api')) {
-        capabilities {
-            requireCapability "$group:api"
-        }
+configurations {
+    apiJava {
+        canBeResolved = true
     }
+}
+
+dependencies {
+    // --- Common --- \\
+
+    implementation(project(':api'))
+    apiJava(project(path: ':api', configuration: 'apiJava'))
 }
 
 sourcesJar {
@@ -88,35 +141,35 @@ jar {
                 'Implementation-Title'  : project.name,
                 'Implementation-Version': project.jar.archiveVersion,
                 'Implementation-Vendor' : mod_author,
-                'Built-On-Minecraft'    : minecraft_version
+                'Built-On-Minecraft'    : minecraft
         ])
     }
 }
 
 processResources {
     def expandProps = [
-            "version": version,
-            "group": project.group, //Else we target the task's group.
-            "minecraft_version": minecraft_version,
-            "forge_version": forge_version,
-            "forge_version_range": forge_version_range,
-            "minecraft_version_range": minecraft_version_range,
-            "fabric_version": fabric_version,
-            "fabric_loader_version": fabric_loader_version,
-            "fabric_minecraft_version_range": fabric_minecraft_version_range,
-            "mod_name": mod_name,
-            "mod_author": mod_author,
-            "mod_id": mod_id,
-            "license": license,
-            "description": project.description,
-            "neoforge_version": neoforge_version,
-            "neoforge_version_range": neoforge_version_range,
-            "night_config_version": night_config_version,
-            "credits": credits
+            "version"                       : version,
+            "group"                         : project.group, //Else we target the task's group.
+            "mod_name"                      : mod_name,
+            "mod_author"                    : mod_author,
+            "mod_id"                        : mod_id,
+            "license"                       : license,
+            "description"                   : project.description,
+            "credits"                       : credits,
+
+            "minecraft_version"             : minecraft,
+            "minecraft_version_range"       : libs.findVersion("minecraft_range").get(),
+            "fabric_version"                : libs.findVersion("fabric_api").get(),
+            "fabric_loader_version"         : libs.findVersion("fabric_loader").get(),
+            "fabric_minecraft_version_range": libs.findVersion("fabric_mc_range").get(),
+            "neoforge_version"              : libs.findVersion("neoforge").get(),
+            "neoforge_version_range"        : libs.findVersion("neoforge_range").get(),
     ]
 
     filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {
         expand expandProps
     }
     inputs.properties(expandProps)
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
