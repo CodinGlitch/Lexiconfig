@@ -4,14 +4,13 @@ import com.codinglitch.lexiconfig.LexiconfigApi;
 import com.codinglitch.lexiconfig.Library;
 import com.codinglitch.lexiconfig.annotations.LexiconLibrary;
 import com.codinglitch.lexiconfig.platform.services.PlatformHelper;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLPaths;
 
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 
-public class ForgePlatformHelper implements PlatformHelper {
+public class NeoForgePlatformHelper implements PlatformHelper {
 
     @Override
     public String getPlatformName() {

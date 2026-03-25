@@ -4,17 +4,11 @@ import com.codinglitch.lexiconfig.Lexiconfig;
 import com.codinglitch.lexiconfig.Library;
 import com.codinglitch.lexiconfig.classes.LexiconData;
 import com.codinglitch.lexiconfig.classes.LexiconEntryData;
-import com.mrcrayfish.configured.api.ConfigType;
-import com.mrcrayfish.configured.api.IConfigEntry;
-import com.mrcrayfish.configured.api.IConfigValue;
-import com.mrcrayfish.configured.api.IModConfig;
+import com.mrcrayfish.configured.api.*;
 import com.mrcrayfish.configured.util.ConfigHelper;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.file.Path;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public class LexiconfiguredFile implements IModConfig {
     public final Library library;
@@ -26,9 +20,9 @@ public class LexiconfiguredFile implements IModConfig {
     }
 
     @Override
-    public void update(IConfigEntry entry) {
+    public ActionResult update(IConfigEntry entry) {
         Set<IConfigValue<?>> values = ConfigHelper.getChangedValues(entry);
-        if (values.isEmpty()) return;
+        if (values.isEmpty()) return ActionResult.fail();
 
         for (IConfigValue<?> value : values) {
             if (value instanceof LexiconfiguredValue<?> lexiconfiguredValue) {
@@ -37,16 +31,7 @@ public class LexiconfiguredFile implements IModConfig {
         }
 
         Lexiconfig.publish();
-    }
-
-    @Override
-    public IConfigEntry getRoot() {
-        try {
-            Field field = this.getClass().getDeclaredField("lexicon");
-            return new LexiconfiguredEntry<>(new LexiconEntryData<>(field, this, lexicon));
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
+        return ActionResult.success();
     }
 
     @Override
@@ -70,7 +55,12 @@ public class LexiconfiguredFile implements IModConfig {
     }
 
     @Override
-    public void loadWorldConfig(Path path, Consumer<IModConfig> result) throws IOException {
-
+    public IConfigEntry createRootEntry() {
+        try {
+            Field field = this.getClass().getDeclaredField("lexicon");
+            return new LexiconfiguredEntry<>(new LexiconEntryData<>(field, this, lexicon));
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
