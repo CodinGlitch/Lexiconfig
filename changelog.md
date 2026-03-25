@@ -1,3 +1,2 @@
-- Massive API changes
-- Expanded usable event types
-- Allowed for configuration reloading through /reload
+- Updated for 1.21.1+
+- Fixed for neoforge

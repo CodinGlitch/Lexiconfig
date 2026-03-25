@@ -2,6 +2,22 @@ plugins {
     id 'multiloader-common'
 }
 
+sourceSets {
+    development {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+        compileClasspath += main.output
+        runtimeClasspath += main.output
+    }
+
+    datagen {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+        compileClasspath += main.output
+        runtimeClasspath += main.output
+    }
+}
+
 configurations {
     commonJava {
         canBeResolved = true
@@ -14,25 +30,19 @@ configurations {
         canBeResolved = true
     }
 
-    devOnly {
-        canBeDeclared = true
-        extendsFrom(runtimeOnly)
-    }
-}
-
-sourceSets {
-    development {
-        compileClasspath += main.compileClasspath
-        runtimeClasspath += main.runtimeClasspath
-
-        runtimeClasspath += configurations.devOnly
-    }
+    developmentImplementation.extendsFrom implementation
+    developmentRuntimeOnly.extendsFrom runtimeOnly
 }
 
 dependencies {
     compileOnly(project(':common')) {
         capabilities {
             requireCapability "$group:$mod_id"
+        }
+
+        def loaderAttribute = Attribute.of('io.github.mcgradleconventions.loader', String)
+        attributes {
+            attribute(loaderAttribute, 'common')
         }
     }
     commonJava project(path: ':common', configuration: 'commonJava')
@@ -41,9 +51,6 @@ dependencies {
     // --- Common --- \\
 
     apiJava project(path: ':api', configuration: 'apiJava')
-
-    implementation "com.electronwill.night-config:core:${night_config_version}"
-    implementation "com.electronwill.night-config:toml:${night_config_version}"
 }
 
 tasks.named('compileJava', JavaCompile) {
@@ -76,12 +83,20 @@ tasks.named("sourcesJar", Jar) {
     from(configurations.commonResources)
 }
 
+// honestly no idea what im doing at this point
+tasks.register("substituteResources", Copy) {
+    from sourceSets.datagen.output.resourcesDir // we only need to replace the resources with the datagen one
+    into sourceSets.main.output.resourcesDir
+
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+}
+
 tasks.register('publishModrinth') {
-    dependsOn("fabric:modrinth", "forge:modrinth", "neoforge:modrinth")
+    dependsOn(":${project.name}:modrinth")
 }
 
 tasks.register('publishCurseForge') {
-    dependsOn("fabric:curseforge", "forge:curseforge", "neoforge:curseforge")
+    dependsOn(":${project.name}:curseforge")
 }
 
 tasks.register('publishSites') {

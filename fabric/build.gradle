@@ -1,34 +1,27 @@
 plugins {
     id 'multiloader-loader'
-    id 'fabric-loom' version '1.10-SNAPSHOT'
-    id "com.modrinth.minotaur" version "2.+"
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
+
+    alias(libs.plugins.loom)
+//    alias(libs.plugins.minotaur)
+//    alias(libs.plugins.cursegradle)
 }
 
-apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/repository-publishers/codinglitch.gradle'
-apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/curseforge.gradle'
-apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/modrinth.gradle'
+//apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/repository-publishers/codinglitch.gradle'
+//apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/curseforge.gradle'
+//apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/modrinth.gradle'
 
 dependencies {
-    minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    minecraft(libs.fabric.minecraft)
 
-    include "com.electronwill.night-config:core:${night_config_version}"
-    include "com.electronwill.night-config:toml:${night_config_version}"
-
-    // Compatibilities
-    modCompileOnly "com.mrcrayfish:configured-common:${configured_version}"
-
-    // Config mods
-    if (config_mod == "configured") {
-        devOnly "com.mrcrayfish:configured-fabric:${configured_version}"
-    } else if (config_mod == "cloth_config") {
-
-    } else if (config_mod == "owo") {
-
-    } else if (config_mod == "config_screens") {
-
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${libs.versions.parchment.minecraft.get()}:${libs.versions.parchment.mappings.get()}@zip")
     }
+
+    modImplementation libs.bundles.fabric.modImpl
+
+    implementation libs.bundles.nightconfig
+    include libs.bundles.nightconfig
+
+    modLocalRuntime libs.bundles.fabric.environment
 }
