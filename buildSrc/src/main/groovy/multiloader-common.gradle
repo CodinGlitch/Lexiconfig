@@ -3,14 +3,9 @@ plugins {
     id 'maven-publish'
 }
 
-def catalogs = project.extensions.getByType(VersionCatalogsExtension)
-def libs = catalogs.named("libs")
-
-def minecraft = libs.findVersion("minecraft").get()
-
 base {
     archivesName = "${mod_id}-${project.name}"
-    version = "${version}"
+    version = "${minecraft_min}-${version}"
 }
 
 java {
@@ -100,7 +95,7 @@ repositories {
 ['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
     configurations."$variant".outgoing {
         capability("$group:${base.archivesName.get()}:$version")
-        capability("$group:$mod_id-${project.name}-${minecraft}:$version")
+        capability("$group:$mod_id-${project.name}-${libs.versions.minecraft.asProvider().get()}:$version")
         capability("$group:$mod_id-${project.name}:$version")
         capability("$group:$mod_id:$version")
     }
@@ -141,7 +136,7 @@ jar {
                 'Implementation-Title'  : project.name,
                 'Implementation-Version': project.jar.archiveVersion,
                 'Implementation-Vendor' : mod_author,
-                'Built-On-Minecraft'    : minecraft
+                'Built-On-Minecraft'    : libs.versions.minecraft.asProvider().get()
         ])
     }
 }
@@ -157,13 +152,13 @@ processResources {
             "description"                   : project.description,
             "credits"                       : credits,
 
-            "minecraft_version"             : minecraft,
-            "minecraft_version_range"       : libs.findVersion("minecraft_range").get(),
-            "fabric_version"                : libs.findVersion("fabric_api").get(),
-            "fabric_loader_version"         : libs.findVersion("fabric_loader").get(),
-            "fabric_minecraft_version_range": libs.findVersion("fabric_mc_range").get(),
-            "neoforge_version"              : libs.findVersion("neoforge").get(),
-            "neoforge_version_range"        : libs.findVersion("neoforge_range").get(),
+            "minecraft_version"             : libs.versions.minecraft.asProvider().get(),
+            "minecraft_range_interval"      : libs.versions.minecraft.range.interval.get(),
+            "minecraft_range_builder"       : libs.versions.minecraft.range.builder.get(),
+            "fabric_version"                : libs.versions.fabric.api.get(),
+            "fabric_loader_version"         : libs.versions.fabric.loader.get(),
+            "neoforge_version"              : libs.versions.neoforge.asProvider().get(),
+            "neoforge_version_range"        : libs.versions.neoforge.range.get(),
     ]
 
     filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {
