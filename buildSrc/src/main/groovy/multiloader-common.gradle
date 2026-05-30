@@ -15,22 +15,30 @@ java {
     withJavadocJar()
 }
 
+void exclusiveGroup(MavenArtifactRepository repo, String... groups) {
+    repositories.exclusiveContent {
+        forRepository { repo }
+        filter {
+            for (final def g in groups) includeGroup g
+        }
+    }
+}
+void exclusiveGroup(String uri, String... groups) {
+    exclusiveGroup(repositories.maven { url = uri }, groups)
+}
+
+void exclusiveRegex(String uri, String... regexes) {
+    repositories.exclusiveContent {
+        forRepository { repositories.maven { url = uri } }
+        filter {
+            for (final def regex in regexes) includeGroupByRegex regex
+        }
+    }
+}
+
+
 repositories {
     mavenCentral()
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = 'Sponge'
-                url = 'https://repo.spongepowered.org/repository/maven-public'
-            }
-        }
-        filter { includeGroupAndSubgroups('org.spongepowered') }
-    }
-
-    maven {
-        name = 'BlameJared Maven (JEI / CraftTweaker / Bookshelf)'
-        url = 'https://maven.blamejared.com'
-    }
 
     maven {
         name = "MrCrayfish (GitHub)"
@@ -41,52 +49,30 @@ repositories {
         }
     }
 
-    maven {
-        name = "Terraformers"
-        url = "https://maven.terraformersmc.com/"
-    }
+    exclusiveGroup("https://maven.terraformersmc.com/", "com.terraformersmc") // ModMenu
+    exclusiveGroup("https://maven.blamejared.com", "mezz.jei") // JEI
 
-    maven { url 'https://maven.maxhenkel.de/repository/public' }
-    maven { url 'https://maven.nucleoid.xyz' }
-    maven { url 'https://maven.codinglitch.com/repository/releases' }
-
-    maven {
-        // location of a maven mirror for JEI files, as a fallback
-        name = "ModMaven"
-        url = "https://modmaven.dev"
-    }
-
-    maven {
-        name = "Modrinth"
-        url = "https://api.modrinth.com/maven"
-        content {
-            includeGroup "maven.modrinth"
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Sponge'
+                url = 'https://repo.spongepowered.org/repository/maven-public'
+            }
         }
+        filter { includeGroupAndSubgroups('org.spongepowered') }
     }
-
-    maven {
-        name = "Valkyrien Skies Internal"
-        url = 'https://maven.valkyrienskies.org'
-    }
-
-    maven { url = "https://mvn.devos.one/releases" }
-    maven { url = "https://mvn.devos.one/snapshots" }
-    maven { url = "https://maven.createmod.net" }
-    maven { url = "https://maven.tterrag.com" }
-    maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
-
-    maven {
-        url "https://maven.squiddev.cc"
-        content {
-            includeGroup("cc.tweaked")
-        }
-    }
-
-    maven {
-        url "https://cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
+    exclusiveContent {
+        forRepositories(
+                maven {
+                    name = 'ParchmentMC'
+                    url = 'https://maven.parchmentmc.org/'
+                },
+                maven {
+                    name = "NeoForge"
+                    url = 'https://maven.neoforged.net/releases'
+                }
+        )
+        filter { includeGroup('org.parchmentmc.data') }
     }
 }
 
