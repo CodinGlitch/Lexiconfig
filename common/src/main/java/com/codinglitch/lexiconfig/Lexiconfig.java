@@ -4,9 +4,11 @@ import com.codinglitch.lexiconfig.classes.LexiconData;
 import com.codinglitch.lexiconfig.events.RevisionEvent;
 import com.codinglitch.lexiconfig.events.CatalogEvent;
 import com.codinglitch.lexiconfig.platform.Services;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ServiceLoader;
 
 public class Lexiconfig extends LexiconfigApi {
     public static final Lexiconfig API = new Lexiconfig();
@@ -16,7 +18,7 @@ public class Lexiconfig extends LexiconfigApi {
         final T loadedService = ServiceLoader.load(clazz)
                 .findFirst()
                 .orElseThrow(() -> new NullPointerException("Failed to load service for " + clazz.getName()));
-        Lexiconfig.debug("Loaded {} for service {}", loadedService, clazz);
+        API.debug("Loaded {} for service {}", loadedService, clazz);
         return loadedService;
     }
 
@@ -25,14 +27,28 @@ public class Lexiconfig extends LexiconfigApi {
         return Services.PLATFORM.getConfigPath();
     }
 
+    private static final Logger LOGGER = LogManager.getLogger("Lexiconfig");
+    public void info(Object object, Object... substitutions) {
+        LOGGER.info(String.valueOf(object), substitutions);
+    }
+    public void debug(Object object, Object... substitutions) {
+        LOGGER.debug(String.valueOf(object), substitutions);
+    }
+    public void warn(Object object, Object... substitutions) {
+        LOGGER.warn(String.valueOf(object), substitutions);
+    }
+    public void error(Object object, Object... substitutions) {
+        LOGGER.error(String.valueOf(object), substitutions);
+    }
+
     public static void revise() {
-        info("Starting lexicon revision!");
+        API.info("Starting lexicon revision!");
         API.callEvent(EventType.PRE_REVISION, new RevisionEvent());
 
         for (LexiconData lexicon : SHELVED_LEXICONS) {
             API.callEvent(EventType.PRE_LEXICON_REVISION, new RevisionEvent.Lexicon(lexicon));
 
-            debug("Revising lexicon {}..", lexicon.getName());
+            API.debug("Revising lexicon {}..", lexicon.getName());
             lexicon.load();
             lexicon.save();
 
@@ -40,17 +56,17 @@ public class Lexiconfig extends LexiconfigApi {
         }
 
         API.callEvent(EventType.POST_REVISION, new RevisionEvent());
-        info("Finished lexicon revision!");
+        API.info("Finished lexicon revision!");
     }
 
     public static void publish() {
-        info("Starting lexicon publishing!");
+        API.info("Starting lexicon publishing!");
         API.callEvent(EventType.PRE_REVISION, new RevisionEvent());
 
         for (LexiconData lexicon : SHELVED_LEXICONS) {
             API.callEvent(EventType.PRE_LEXICON_REVISION, new RevisionEvent.Lexicon(lexicon));
 
-            debug("Publishing lexicon {}..", lexicon.getName());
+            API.debug("Publishing lexicon {}..", lexicon.getName());
             lexicon.save();
             lexicon.load();
 
@@ -58,11 +74,11 @@ public class Lexiconfig extends LexiconfigApi {
         }
 
         API.callEvent(EventType.POST_REVISION, new RevisionEvent());
-        info("Finished lexicon publishing!");
+        API.info("Finished lexicon publishing!");
     }
 
     static {
-        info("Beginning lexicon shelving!");
+        API.info("Beginning lexicon shelving!");
         Services.PLATFORM.shelveLexicons(); // static initializer since initialize sometimes fires too late
     }
 
@@ -74,7 +90,7 @@ public class Lexiconfig extends LexiconfigApi {
         API.callEvent(EventType.PRE_CATALOG, new CatalogEvent());
 
         for (LexiconData lexicon : SHELVED_LEXICONS) {
-            info("Cataloging lexicon {}!", lexicon);
+            API.info("Cataloging lexicon {}!", lexicon);
             lexicon.catalog();
 
             lexicon.load();
@@ -82,6 +98,6 @@ public class Lexiconfig extends LexiconfigApi {
         }
 
         API.callEvent(EventType.POST_CATALOG, new CatalogEvent());
-        info("Lexiconfig cataloging completed!");
+        API.info("Lexiconfig cataloging completed!");
     }
 }
