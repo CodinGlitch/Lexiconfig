@@ -36,7 +36,7 @@ public class ForgePlatformHelper implements PlatformHelper {
 
                         library.shelveLexicons();
                     } catch (Exception e) {
-                        LexiconfigApi.warn("Something went wrong while shelving lexicons! {}", e);
+                        LexiconfigApi.INSTANCE.warn("Something went wrong while shelving lexicons! {}", e);
                     }
                 }
             });
