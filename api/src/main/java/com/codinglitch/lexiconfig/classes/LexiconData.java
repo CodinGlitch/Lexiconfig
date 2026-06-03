@@ -50,7 +50,7 @@ public abstract class LexiconData extends LexiconSubstrate {
                     } else {
                         Object configValue = config.getOrElse(fullPath, value);
                         if (configValue.getClass() != value.getClass()) {
-                            LexiconfigApi.warn("Saved config value \"{}\" did not match the one provided! ([{}] {} saved vs. [{}] {} default) It will be replaced with the default value.",
+                            LexiconfigApi.INSTANCE.warn("Saved config value \"{}\" did not match the one provided! ([{}] {} saved vs. [{}] {} default) It will be replaced with the default value.",
                                     field.getName(), configValue.getClass(), configValue, value.getClass(), value
                             );
                         } else {

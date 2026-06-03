@@ -32,11 +32,11 @@ public class LexiconSubstrate {
                 Object value = field.get(this);
                 ENTRIES.put(field.getName(), new LexiconEntryData<>(field, this, value));
 
-                if (value instanceof LexiconSubstrate substrate) {
-                    substrate.catalog();
+                if (value instanceof LexiconSubstrate) {
+                    ((LexiconSubstrate) value).catalog();
                 }
             } catch (IllegalAccessException e) {
-                LexiconfigApi.warn(e);
+                LexiconfigApi.INSTANCE.warn(e);
             }
         }
     }

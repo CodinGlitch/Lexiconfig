@@ -11,13 +11,6 @@ base {
 
 apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/repository-publishers/codinglitch.gradle'
 
-legacyForge {
-    mcpVersion = libs.versions.minecraft.asProvider().get()
-
-    parchment.minecraftVersion.set(libs.versions.parchment.minecraft.get())
-    parchment.mappingsVersion.set(libs.versions.parchment.mappings.get())
-}
-
 dependencies {
     compileOnlyApi(libs.nightconfig.core)
 }
@@ -34,9 +27,7 @@ artifacts {
 }
 
 java {
-    toolchain {
-        // we have to target Java 8 specifically for the api so older versions can use it
-        // when an api version is published from a later branch of minecraft, it won't cause jvm compatibility issues
-        languageVersion = JavaLanguageVersion.of(17)
-    }
+    // we have to target Java 8 specifically for the api so older versions can use it
+    // when an api version is published from a later branch of minecraft, it won't cause jvm compatibility issues
+    toolchain.languageVersion = JavaLanguageVersion.of(8)
 }

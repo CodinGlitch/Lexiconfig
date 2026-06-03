@@ -1,12 +1,13 @@
 package com.codinglitch.lexiconfig;
 
 import com.codinglitch.lexiconfig.classes.LexiconData;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public abstract class LexiconfigApi {
     protected static final List<LexiconData> SHELVED_LEXICONS = new ArrayList<>();
@@ -20,22 +21,10 @@ public abstract class LexiconfigApi {
         INSTANCE = this;
     }
 
-    /**
-     * Do not use these.
-     */
-    private static Logger LOGGER = LogManager.getLogger("Lexiconfig");
-    public static void info(Object object, Object... substitutions) {
-        LOGGER.info(String.valueOf(object), substitutions);
-    }
-    public static void debug(Object object, Object... substitutions) {
-        LOGGER.debug(String.valueOf(object), substitutions);
-    }
-    public static void warn(Object object, Object... substitutions) {
-        LOGGER.warn(String.valueOf(object), substitutions);
-    }
-    public static void error(Object object, Object... substitutions) {
-        LOGGER.error(String.valueOf(object), substitutions);
-    }
+    public abstract void info(Object object, Object... substitutions);
+    public abstract void debug(Object object, Object... substitutions);
+    public abstract void warn(Object object, Object... substitutions);
+    public abstract void error(Object object, Object... substitutions);
 
     /**
      * These are all the available event types for use inside the {@code registerListener} method.
@@ -84,7 +73,7 @@ public abstract class LexiconfigApi {
     public static void shelveLexicon(Library library, LexiconData lexicon) {
         library.shelve(lexicon);
         SHELVED_LEXICONS.add(lexicon);
-        info("Shelved lexicon {}!", lexicon);
+        INSTANCE.info("Shelved lexicon {}!", lexicon);
     }
 
     /**
