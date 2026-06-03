@@ -5,7 +5,7 @@ plugins {
 
 base {
     archivesName = "${mod_id}-${project.name}"
-    version = "${minecraft_min}-${version}"
+    version = "${version}-${compatibility}"
 }
 
 java {

@@ -22,7 +22,7 @@ public class LexiconEntryData<T> {
         try {
             return Optional.ofNullable((T) field.get(owner));
         } catch (IllegalAccessException e) {
-            LexiconfigApi.warn(e);
+            LexiconfigApi.INSTANCE.warn(e);
         }
 
         return Optional.empty();
@@ -31,7 +31,7 @@ public class LexiconEntryData<T> {
         try {
             field.set(owner, value);
         } catch (IllegalAccessException e) {
-            LexiconfigApi.warn(e);
+            LexiconfigApi.INSTANCE.warn(e);
         }
     }
 
