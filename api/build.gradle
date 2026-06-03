@@ -2,7 +2,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
 
-    alias(libs.plugins.moddevgradle)
+    alias(libs.plugins.legacyforge)
 }
 
 base {
@@ -11,8 +11,8 @@ base {
 
 apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/repository-publishers/codinglitch.gradle'
 
-neoForge {
-    neoFormVersion = libs.versions.neoform.get()
+legacyForge {
+    mcpVersion = libs.versions.minecraft.asProvider().get()
 
     parchment.minecraftVersion.set(libs.versions.parchment.minecraft.get())
     parchment.mappingsVersion.set(libs.versions.parchment.mappings.get())
@@ -31,4 +31,12 @@ configurations {
 
 artifacts {
     apiJava sourceSets.main.java.sourceDirectories.singleFile
+}
+
+java {
+    toolchain {
+        // we have to target Java 8 specifically for the api so older versions can use it
+        // when an api version is published from a later branch of minecraft, it won't cause jvm compatibility issues
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }

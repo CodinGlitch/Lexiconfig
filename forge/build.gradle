@@ -1,0 +1,89 @@
+plugins {
+    id 'multiloader-loader'
+    alias(libs.plugins.legacyforge)
+
+    id 'publish-forge'
+}
+
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/repository-publishers/codinglitch.gradle'
+
+mixin {
+    add(sourceSets.main, "${mod_id}.refmap.json")
+
+    config("${mod_id}.mixins.json")
+    config("${mod_id}.forge.mixins.json")
+}
+
+artifacts {
+    apiElements tasks.named("jarJar")
+}
+
+tasks.withType(GenerateModuleMetadata) {
+    enabled = false
+}
+components.java.withVariantsFromConfiguration(configurations.runtimeElements) {
+    skip()
+}
+
+legacyForge {
+    version = libs.versions.forge.asProvider().get()
+
+    //validateAccessTransformers = true
+
+    accessTransformers.from(project(':common').file('src/main/resources/META-INF/accesstransformer.cfg'))
+
+    parchment.minecraftVersion.set(libs.versions.parchment.minecraft.get())
+    parchment.mappingsVersion.set(libs.versions.parchment.mappings.get())
+
+    runs {
+        configureEach {
+            ideName = "Forge ${it.name.capitalize()} (${project.path})"
+        }
+        client {
+            client()
+        }
+        data {
+            data()
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+        server {
+            server()
+        }
+        gameTestServer {
+            type = "gameTestServer"
+            gameDirectory = project.file("run/gametest")
+        }
+    }
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.development
+        }
+    }
+}
+
+sourceSets.main.resources.srcDir 'src/generated/resources'
+
+dependencies {
+    annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
+
+    compileOnly(libs.configured)
+
+    modRuntimeOnly libs.bundles.forge.environment
+}
+
+jar {
+    finalizedBy('reobfJar')
+    manifest.attributes([
+            "MixinConfigs": "${mod_id}.mixins.json,${mod_id}.forge.mixins.json"
+    ])
+}
+
+sourceSets.each {
+    def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
+    it.output.resourcesDir = dir
+    it.java.destinationDirectory = dir
+}
+
+substituteResources.dependsOn compileDatagenJava, processDatagenResources, compileJava, processResources
+datagenClasses.finalizedBy substituteResources

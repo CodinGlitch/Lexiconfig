@@ -1,14 +1,11 @@
 plugins {
     id 'multiloader-loader'
-
     alias(libs.plugins.loom)
-//    alias(libs.plugins.minotaur)
-//    alias(libs.plugins.cursegradle)
+
+    id 'publish-fabric'
 }
 
 apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/repository-publishers/codinglitch.gradle'
-//apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/curseforge.gradle'
-//apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/site-publishers/modrinth.gradle'
 
 dependencies {
     minecraft(libs.fabric.minecraft)
@@ -26,4 +23,30 @@ dependencies {
     compileOnly(libs.configured)
 
     modLocalRuntime libs.bundles.fabric.environment
+}
+
+loom {
+    def aw = project(":common").file("src/main/resources/${mod_id}.accesswidener")
+    if (aw.exists()) {
+        accessWidenerPath.set(aw)
+    }
+    mixin {
+        defaultRefmapName.set("${mod_id}.refmap.json")
+    }
+    runs {
+        client {
+            client()
+            setConfigName("Fabric Client")
+            ideConfigGenerated(true)
+            runDir("runs/client")
+            source sourceSets.development
+        }
+        server {
+            server()
+            setConfigName("Fabric Server")
+            ideConfigGenerated(true)
+            runDir("runs/server")
+            source sourceSets.development
+        }
+    }
 }

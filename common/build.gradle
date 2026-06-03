@@ -1,24 +1,17 @@
 plugins {
     id 'multiloader-common'
 
-    alias(libs.plugins.moddevgradle)
+    alias(libs.plugins.legacyforge)
 }
 
-neoForge {
-    neoFormVersion = libs.versions.neoform.get()
+legacyForge {
+    mcpVersion = libs.versions.minecraft.asProvider().get()
 
     accessTransformers.from(project(':common').file('src/main/resources/META-INF/accesstransformer.cfg'))
 
     parchment.minecraftVersion.set(libs.versions.parchment.minecraft.get())
     parchment.mappingsVersion.set(libs.versions.parchment.mappings.get())
-
-    // Automatically enable AccessTransformers if the file exists
-    def at = file('src/main/resources/META-INF/accesstransformer.cfg')
-    if (at.exists()) {
-        accessTransformers.from(at.absolutePath)
-    }
 }
-
 
 repositories {
     mavenCentral()

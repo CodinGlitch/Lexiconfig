@@ -5,7 +5,7 @@ plugins {
 
 base {
     archivesName = "${mod_id}-${project.name}"
-    version = "${minecraft_min}-${version}"
+    version = "${version}-${compatibility}"
 }
 
 java {
@@ -143,8 +143,8 @@ processResources {
             "minecraft_range_builder"       : libs.versions.minecraft.range.builder.get(),
             "fabric_version"                : libs.versions.fabric.api.get(),
             "fabric_loader_version"         : libs.versions.fabric.loader.get(),
-            "neoforge_version"              : libs.versions.neoforge.asProvider().get(),
-            "neoforge_version_range"        : libs.versions.neoforge.range.get(),
+            "forge_version"                 : libs.versions.forge.asProvider().get(),
+            "forge_version_range"           : libs.versions.forge.range.get(),
     ]
 
     filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {
