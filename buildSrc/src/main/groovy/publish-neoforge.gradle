@@ -1,13 +1,11 @@
 publishMods {
-    file jar.archiveFile
+    file.set(jar.archiveFile)
 
     modLoaders.add("neoforge")
     dryRun = debug_mode.toBoolean()
 
     curseforge {
-
     }
     modrinth {
-
     }
 }

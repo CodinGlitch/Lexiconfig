@@ -18,7 +18,7 @@ loom                = "1.18-SNAPSHOT"
 neoform             = "1.21.1-20240808.144430"
 mod_dev_gradle      = "2.0.123"
 
-mod_publish         = "2.0.0-beta.2"
+mod_publish         = "2.2.1"
 
 #---- Dependencies ----#
 mixin               = "0.8.5"

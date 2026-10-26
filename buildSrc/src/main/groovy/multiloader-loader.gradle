@@ -97,14 +97,14 @@ publishMods {
     additionalFiles.from(sourcesJar)
     additionalFiles.from(javadocJar)
 
-    displayName = "[${project.name.toUpperCase()}] ${mod_name} ${libs.versions.minecraft.asProvider().get()}-${providers.gradleProperty("version").get()}"
+    displayName = "[${project.name.toUpperCase()}] ${mod_name} ${providers.gradleProperty("version").get()}-${compatibility}"
 
     changelog = file("${project.rootDir}/changelog.md").text
     type = release_type
 
     curseforge {
         projectId = curseforge_id
-        projectSlug = "simple-voice-radio"
+        projectSlug = "lexiconfig"
         accessToken = project.findProperty("curseforge_token")
 
         minecraftVersionRange {
