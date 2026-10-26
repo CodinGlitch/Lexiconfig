@@ -9,7 +9,7 @@ base {
     archivesName = "${mod_id}-${project.name}"
 }
 
-apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/repository-publishers/codinglitch.gradle'
+apply from: 'https://raw.githubusercontent.com/CodinGlitch/gradle-templates/main/repository-publishers/reposilite.gradle'
 
 dependencies {
     compileOnlyApi(libs.nightconfig.core)
